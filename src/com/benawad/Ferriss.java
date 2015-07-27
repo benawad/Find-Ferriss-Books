@@ -46,10 +46,10 @@ public class Ferriss {
         sBooks.addAll(temp);
 
         //save the list to a text file
-        Saver saver = new Saver();
+        FileManager fileManager = new FileManager();
         //the list of books has some non-books in it
         //we will get rid of those later
-        saver.saveList(sBooks, BOOK_FILE);
+        fileManager.saveList(sBooks, BOOK_FILE);
     }
 
     private List<String> fetchLinks() {
