@@ -13,42 +13,30 @@ import java.util.Set;
 
 public class Ferriss {
 
-    public final static String BOOK_FILE = "unCheckedBooks.txt";
+    public final static String BOOK_FILE = "book_titles.txt";
     public final static String LINKS = "http://fourhourworkweek.com/podcast/";
+    public final static String SEPARATOR = "::";
 
     public void downloadAllBooks() {
         //get all the links to every tim ferriss podcast
         List<String> links = fetchLinks();
-        //get every book reccomended in each episode
-        //[nameOfBook, author]
+        //get every book recommended in each episode
         List<String[]> books = fetchBooks(links);
-
-        //some of the the author's names are followed by a dash and some extra info we don't need
-        for(int i = 0; i < books.size(); i++){
-            String author = books.get(i)[1];
-            if(author.contains("–")){
-                int loc = author.indexOf("–");
-                books.get(i)[1] = author.substring(0, loc-1);
-            }
-        }
-
-        //change string array to string with format = book||author
-        List<String> sBooks = new ArrayList<>();
-        for(String[] array : books){
-            sBooks.add(array[0].trim()+"||"+array[1].trim());
-        }
 
         //there may be duplicates because 2 people can like the same book
         //we want to remove duplicates
-        Set<String> temp = new HashSet<>();
-        temp.addAll(sBooks);
-        sBooks.clear();
-        sBooks.addAll(temp);
+        Set<String[]> temp = new HashSet<>();
+        temp.addAll(books);
+        books.clear();
+        books.addAll(temp);
+
+        List<String> sBooks = new ArrayList<>();
+        for(String[] book : books){
+           sBooks.add(book[0].trim() + SEPARATOR + book[1].trim());
+        }
 
         //save the list to a text file
         FileManager fileManager = new FileManager();
-        //the list of books has some non-books in it
-        //we will get rid of those later
         fileManager.saveList(sBooks, BOOK_FILE);
     }
 
@@ -78,17 +66,6 @@ public class Ferriss {
         return links;
     }
 
-    //return number of times a word is found in array
-    public int wordCount(String word, String[] list){
-        int count = 0;
-        for(String item : list){
-            if (item.equals(word)){
-                count++;
-            }
-        }
-        return count;
-    }
-
     //go to each link and get all the books mentioned in the description
     private List<String[]> fetchBooks(List<String> links) {
         List<String[]> books = new ArrayList<>();
@@ -106,12 +83,37 @@ public class Ferriss {
                             //this regex works, but could be made better
                             String regex = "<a.+>.+</a>.*by.\\w+.+";
                             if(li.html().matches(regex)){
-//                                System.out.println("Found the book " + li.text());
-                                if(wordCount("by", li.text().split("\\s+")) > 1){
-//                                    books.add(customSplit(li.text()));
-                                    //^does not work needs better implementation
-                                }else {
-                                    books.add(li.text().split("by"));
+                                //tim links all the books to amazon or audible
+                                //so we can check if the <a>'s href is linking to amazon or audible
+                                //if it is not, it is probably not a book and we don't want it
+                                String href = li.getElementsByTag("a").get(0).attr("href");
+                                if(href.contains("amazon.com")){
+                                    //getting book title from amazon link
+                                    //example link: http://www.amazon.com/The-Checklist-Manifesto-Things-Right/dp/0312430000/?tag=offsitoftimfe-20
+                                    //we just want The-Checklist-Manifesto-Things-Right
+                                    String end = href.substring(href.indexOf("com/"));
+                                    int loc1 = end.indexOf("/")+1;
+                                    String newEnd = end.replaceFirst("/", ":");
+                                    int loc2 = newEnd.indexOf("/");
+                                    String title = newEnd.substring(loc1, loc2);
+
+                                    //the link is different if tim uses an affiliate link
+                                    //for now just ignoring those
+                                    if(!title.equals("gp")){
+                                        books.add(new String[]{title, href});
+                                    }
+                                } else if(href.contains("audible.com")){
+                                    //example link: http://www.audible.com/pd/Teens/The-Graveyard-Book-Audiobook/B002V8DEKC/?tag=offsitoftimfe-20
+                                    //we want The-Graveyard-Book-Audiobook
+                                    //the url format is audible.com/pd/category/bookname
+                                    String com = href.substring(href.indexOf("com"));
+                                    com = com.replaceFirst("/", ":");
+                                    com = com.replaceFirst("/", ":");
+                                    int loc1 = com.indexOf("/")+1;
+                                    com = com.replaceFirst("/", ":");
+                                    int loc2 = com.indexOf("/");
+                                    String title = com.substring(loc1, loc2);
+                                    books.add(new String[]{title, href});
                                 }
                             }
                         }
@@ -124,41 +126,6 @@ public class Ferriss {
             }
         }
         return books;
-    }
-
-    //we want to split on the word 'by'
-    //but if the word 'by' is in the name of the book it messes up the split
-    //this method is flaky
-    //works for this : Bird by Bird by Anne Lamott
-    //fails for this : Atlas Shrugged by Ayn Rand – recommended by Gabby
-    //not sure how to properly split some of the strings
-    //only 5 or so books have the word 'by' in them
-    //for now leaving them off the list
-    private String[] customSplit(String text) {
-        String[] words = text.split("\\s+");
-        for(int i = 0; i < words.length; i++){
-           if(noMoreComing("by", words, i)){
-               break;
-           } else if (words[i].equals("by")){
-               words[i] = "~~";
-           }
-        }
-
-        text = String.join(" ", words);
-        System.out.println(text);
-        String[] bookInfo = text.split("\\s+by\\s+");
-        bookInfo[0] = bookInfo[0].replaceAll("~~", "by");
-        return bookInfo;
-    }
-
-    private boolean noMoreComing(String word, String[] list, int start){
-        boolean noMore = true;
-        for(int i = start+1; i < list.length; i++){
-            if(list[i].equals(word)){
-                noMore = false;
-            }
-        }
-        return noMore;
     }
 
 }
