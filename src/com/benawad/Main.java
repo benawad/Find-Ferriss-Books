@@ -53,7 +53,7 @@ public class Main {
             System.out.print("Enter Google API key >");
             String apiKey = scan.nextLine();
             FileManager fileManager = new FileManager();
-            fileManager.saveWord(apiKey, keyFile);
+            fileManager.saveFile(apiKey, keyFile);
         }
 
         File bookObjects = new File(BOOK_OB_FILE);
@@ -90,6 +90,7 @@ public class Main {
                 e.printStackTrace();
             }
         }
+
         List<Book> bookList = new ArrayList<>();
 
         try {
@@ -105,6 +106,9 @@ public class Main {
             e.printStackTrace();
         }
 
-        //todo booklist is full of data now we want to sort the data and make booklists
+        //sort books into text files
+        BookSorter sorter = new BookSorter();
+        sorter.sortByType(bookList);
+
     }
 }

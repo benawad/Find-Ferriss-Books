@@ -46,9 +46,13 @@ public class GoogleBooks {
                     }
                 }
             }
-            Book newBook = makeBook(json);
-            newBook.setAmazon(book[1]);
-            books.add(newBook);
+            if(!json.equals("")) {
+                Book newBook = makeBook(json);
+                newBook.setAmazon(book[1]);
+                books.add(newBook);
+            } else {
+                new Exception("Google Books API - rate limit exceeded");
+            }
         }
         return books;
     }
@@ -71,21 +75,33 @@ public class GoogleBooks {
         book.setTitle(volumeInfo.getString("title"));
         if (volumeInfo.has("subtitle")) {
             book.setSubtitle(volumeInfo.getString("subtitle"));
+        } else {
+            book.setSubtitle("No subtitle");
         }
         if(volumeInfo.has("authors")) {
             book.setAuthors(toStringArray(volumeInfo.getJSONArray("authors")));
+        } else {
+            book.setAuthors(new String[]{"Unknown author"});
         }
         if (volumeInfo.has("description")) {
             book.setDescription(volumeInfo.getString("description"));
+        } else {
+            book.setDescription("No description available");
         }
         if (volumeInfo.has("pageCount")) {
             book.setPageCount(volumeInfo.getInt("pageCount"));
+        } else {
+            book.setPageCount(0);
         }
         if(volumeInfo.has("categories")) {
             book.setGenres(toStringArray(volumeInfo.getJSONArray("categories")));
+        } else {
+            book.setGenres(new String[]{"Uncategorized"});
         }
         if(jsonBook.getJSONObject("accessInfo").has("webReaderLink")) {
             book.setGoogle(jsonBook.getJSONObject("accessInfo").getString("webReaderLink"));
+        } else {
+            book.setGoogle("Link not available");
         }
         //assuming if the book is in Google's repository it must be an ebook
         book.setEbook(true);
@@ -96,7 +112,7 @@ public class GoogleBooks {
         String json = "";
         FileManager fileManager = new FileManager();
         String apiKey = fileManager.readWord(new File(Main.API_KEY_FILE));
-        URL url = new URL(API_URL + s);
+        URL url = new URL(API_URL + s + "&key=" + apiKey);
         BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
         String line = null;
         while ((line = br.readLine()) != null) {

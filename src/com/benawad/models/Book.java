@@ -19,6 +19,52 @@ public class Book implements Serializable {
     String apple;
     String audiobookDesc;
 
+    public String toString(){
+        String info = "";
+        String fTitle = String.format("%-12s%s\n","Title:", title);
+        String fSubtitle = String.format("%-12s%s\n","Subtitle:", subtitle);
+        String sAuthors = "";
+        for(int i = 0; i< authors.length; i++){
+            sAuthors += authors[i];
+            if(i != authors.length-1){
+                sAuthors += ", ";
+            }
+        }
+        String fAuthors = String.format("%-12s%s\n", "Authors:", sAuthors);
+        String fDescription = String.format("%-12s%s\n", "Google's description: ", description);
+        String fAmazon = String.format("%-12s%s\n", "Amazon:", amazon);
+        String fApple = String.format("%-12s%s\n", "Itunes:", apple);
+        String fGoogle = String.format("%-12s%s\n", "Google:", google);
+        String fPageCount = String.format("%-12s%s\n", "Pages:", pageCount);
+        String sGenres = "";
+        for(int i = 0; i < genres.length; i++){
+            sGenres += genres[i];
+            if(i != genres.length-1){
+                sGenres += ", ";
+            }
+        }
+        String fGenres = String.format("%-12s%s\n", "Genres:", sGenres);
+        String fAudiobookDesc = String.format("%-12s%s\n", "Itune's description: ", audiobookDesc);
+        String formats = "";
+        if(ebook){
+            formats += "Ebook";
+        }
+        if(audiobook && ebook){
+            formats += ", Audiobook";
+        } else if (audiobook){
+            formats += "Audiobook";
+        }
+        if(!audiobook && !ebook){
+            formats += "Print";
+        }
+
+        String fFormat = String.format("%-12s%s\n", "Formats:", formats);
+        info += fTitle + fSubtitle + fAuthors + fDescription + fAudiobookDesc + fPageCount + fGenres + fFormat + fAmazon + fApple + fGoogle;
+        String seperator = "=============================================\n";
+        info += seperator;
+        return info;
+    }
+
     public String getApple() {
         return apple;
     }

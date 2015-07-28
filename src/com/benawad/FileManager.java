@@ -35,7 +35,7 @@ public class FileManager {
         }
         return books;
     }
-    public void saveWord(String word, File name){
+    public void saveFile(String word, File name){
         try{
             BufferedWriter writer = new BufferedWriter(new FileWriter(name));
             writer.write(word);

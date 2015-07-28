@@ -31,12 +31,19 @@ public class ItuneSearch {
             if(result1.getString("wrapperType").equals("audiobook")){
                 book.setAudiobook(true);
                 book.setAudiobookDesc(result1.getString("description"));
+            } else {
+                book.setAudiobook(false);
+                book.setAudiobookDesc("NA");
             }
             if(result1.has("collectionViewUrl")) {
                 book.setApple(result1.getString("collectionViewUrl"));
+            } else {
+                book.setApple("Link not available");
             }
         } else {
             book.setAudiobook(false);
+            book.setApple("Link not available");
+            book.setAudiobookDesc("NA");
         }
 
     }
