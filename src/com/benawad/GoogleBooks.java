@@ -108,11 +108,11 @@ public class GoogleBooks {
         return book;
     }
 
-    private String searchBook(String s) throws IOException {
+    private String searchBook(String bookTitle) throws IOException {
         String json = "";
         FileManager fileManager = new FileManager();
         String apiKey = fileManager.readWord(new File(Main.API_KEY_FILE));
-        URL url = new URL(API_URL + s + "&key=" + apiKey);
+        URL url = new URL(API_URL + bookTitle + "&key=" + apiKey);
         BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
         String line = null;
         while ((line = br.readLine()) != null) {

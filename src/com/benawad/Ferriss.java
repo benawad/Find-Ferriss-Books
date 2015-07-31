@@ -5,6 +5,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -37,7 +38,7 @@ public class Ferriss {
 
         //save the list to a text file
         FileManager fileManager = new FileManager();
-        fileManager.saveList(sBooks, BOOK_FILE);
+        fileManager.saveList(sBooks, new File(BOOK_FILE));
     }
 
     private List<String> fetchLinks() {

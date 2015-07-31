@@ -8,7 +8,7 @@ import java.util.List;
  * Created by benawad on 7/26/15.
  */
 public class FileManager {
-    public void saveList(List<String> list, String name){
+    public void saveList(List<String> list, File name){
         try{
             BufferedWriter writer = new BufferedWriter(new FileWriter(name));
             for(String str:list){
@@ -19,10 +19,9 @@ public class FileManager {
             ex.printStackTrace();
         }
     }
-    public List<String[]> readList(String sFile){
+    public List<String[]> readList(File file){
         List<String[]> books = new ArrayList<>();
         try{
-            File file = new File(sFile);
             FileReader fileReader = new FileReader(file);
             BufferedReader br = new BufferedReader(fileReader);
             String line = null;

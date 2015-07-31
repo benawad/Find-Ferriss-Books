@@ -73,7 +73,7 @@ public class Main {
         }
         if(updateBookObs) {
             FileManager fm = new FileManager();
-            List<String[]> bookList = fm.readList(Ferriss.BOOK_FILE);
+            List<String[]> bookList = fm.readList(new File(Ferriss.BOOK_FILE));
             GoogleBooks googleBooks = new GoogleBooks();
             List<Book> books = googleBooks.createBooks(bookList);
             ItuneSearch ituneSearch = new ItuneSearch();
