@@ -18,6 +18,7 @@ public class ItuneSearch {
     public static final String API_URL = "https://itunes.apple.com/search?term=";
     public void checkIfAudiobook(List<Book> books) {
         for(Book book : books){
+            System.out.println("Itunes API searching: "+ book.getTitle());
             String json = searchBook(book);
             checkBook(json, book);
         }

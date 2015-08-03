@@ -5,7 +5,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -14,11 +13,10 @@ import java.util.Set;
 
 public class Ferriss {
 
-    public final static String BOOK_FILE = "book_titles.txt";
     public final static String LINKS = "http://fourhourworkweek.com/podcast/";
     public final static String SEPARATOR = "::";
 
-    public void downloadAllBooks() {
+    public List<String[]> downloadAllBooks() {
         //get all the links to every tim ferriss podcast
         List<String> links = fetchLinks();
         //get every book recommended in each episode
@@ -31,14 +29,7 @@ public class Ferriss {
         books.clear();
         books.addAll(temp);
 
-        List<String> sBooks = new ArrayList<>();
-        for(String[] book : books){
-           sBooks.add(book[0].trim() + SEPARATOR + book[1].trim());
-        }
-
-        //save the list to a text file
-        FileManager fileManager = new FileManager();
-        fileManager.saveList(sBooks, new File(BOOK_FILE));
+        return books;
     }
 
     private List<String> fetchLinks() {
@@ -56,7 +47,7 @@ public class Ferriss {
                     for (Element e : eles) {
                         Element a = e.getElementsByTag("a").get(0);
                         String url = a.attr("href");
-//                        System.out.println("Found the link for " + a.text());
+                        System.out.println("Found the link for " + a.text());
                         links.add(url);
                     }
                 }
@@ -102,6 +93,7 @@ public class Ferriss {
                                     //for now just ignoring those
                                     if(!title.equals("gp")){
                                         books.add(new String[]{title, href});
+                                        System.out.println("Book added to the list: " + title);
                                     }
                                 } else if(href.contains("audible.com")){
                                     //example link: http://www.audible.com/pd/Teens/The-Graveyard-Book-Audiobook/B002V8DEKC/?tag=offsitoftimfe-20
@@ -115,6 +107,7 @@ public class Ferriss {
                                     int loc2 = com.indexOf("/");
                                     String title = com.substring(loc1, loc2);
                                     books.add(new String[]{title, href});
+                                    System.out.println("Book added to the list: " + title);
                                 }
                             }
                         }

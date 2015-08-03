@@ -5,7 +5,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -19,7 +18,7 @@ import java.util.Random;
 public class GoogleBooks {
     public static final String API_URL = "https://www.googleapis.com/books/v1/volumes?q=";
 
-    public List<Book> createBooks(List<String[]> bookList) {
+    public List<Book> createBooks(List<String[]> bookList, String apiKey) {
 
         List<Book> books = new ArrayList<>();
 
@@ -27,7 +26,8 @@ public class GoogleBooks {
             String json = "";
             for(int n = 0; n < 5; ++n){
                 try {
-                    json = searchBook(book[0]);
+                    System.out.println("Google Books API searching: " + book[0]);
+                    json = searchBook(book[0], apiKey);
                     break;
                 } catch (IOException e) {
                     //403 error = rate limit exceeded
@@ -108,11 +108,12 @@ public class GoogleBooks {
         return book;
     }
 
-    private String searchBook(String bookTitle) throws IOException {
+    private String searchBook(String bookTitle, String apiKey) throws IOException {
         String json = "";
-        FileManager fileManager = new FileManager();
-        String apiKey = fileManager.readWord(new File(Main.API_KEY_FILE));
-        URL url = new URL(API_URL + bookTitle + "&key=" + apiKey);
+        if(!apiKey.isEmpty()){
+            apiKey = "&key=" + apiKey;
+        }
+        URL url = new URL(API_URL + bookTitle + apiKey);
         BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
         String line = null;
         while ((line = br.readLine()) != null) {
