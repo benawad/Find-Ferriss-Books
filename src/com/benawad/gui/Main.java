@@ -1,14 +1,20 @@
 package com.benawad.gui;
 
+import com.benawad.CommandLineMain;
 import com.benawad.DownloadRunner;
+import com.benawad.database.BookDatabaseCreator;
+import com.benawad.models.Book;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class Main {
     final static String BOOKS_PANEL = "Books";
@@ -43,7 +49,7 @@ public class Main {
         panel.add(downloadButton);
     }
 
-    class DownloadListener implements ActionListener{
+    class DownloadListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             downloadButton.setText("Loading...");
@@ -56,7 +62,7 @@ public class Main {
         }
     }
 
-    class LinkListener implements ActionListener{
+    class LinkListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -65,7 +71,7 @@ public class Main {
                 URL url = new URL(API_KEY_URL);
 
                 Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
-                if(desktop != null && desktop.isSupported(Desktop.Action.BROWSE)){
+                if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
                     desktop.browse(url.toURI());
                 }
             } catch (URISyntaxException | IOException e1) {
@@ -116,6 +122,28 @@ public class Main {
     }
 
     public static void main(String[] args) {
-       createAndShowGUI();
+        createAndShowGUI();
+
+java.util.List<Book> bookList = new ArrayList<>();
+
+        try {
+            BookDatabaseCreator creator = new BookDatabaseCreator();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            FileInputStream fileInputStream = new FileInputStream(CommandLineMain.BOOK_OB_FILE);
+            ObjectInputStream os = new ObjectInputStream(fileInputStream);
+            Book book;
+            while ((book = (Book) os.readObject()) != null) {
+                bookList.add(book);
+            }
+            os.close();
+        } catch (IOException | ClassNotFoundException e) {
+            //EOFException exception is expected
+            e.printStackTrace();
+        }
     }
+
 }

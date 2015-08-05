@@ -19,6 +19,21 @@ public class Book implements Serializable {
     String apple;
     String audiobookDesc;
 
+    public Book(){}
+
+    public Book(String title, String[] authors, String amazon, String subtitle, String description, int pageCount, String[] genres, String google, String apple, String audiobookDesc) {
+        this.title = title;
+        this.authors = authors;
+        this.amazon = amazon;
+        this.subtitle = subtitle;
+        this.description = description;
+        this.pageCount = pageCount;
+        this.genres = genres;
+        this.google = google;
+        this.apple = apple;
+        this.audiobookDesc = audiobookDesc;
+    }
+
     public String toString(){
         String info = "";
         String fTitle = String.format("%-12s%s\n","Title:", title);

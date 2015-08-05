@@ -1,6 +1,6 @@
 package com.benawad;
 
-public class Main {
+public class CommandLineMain {
 
     //we want to make the API folder outside the project structure so we don't accidentally share our API key with git
     public static final String API_KEY_FOLDER = System.getProperty("user.home")+"/Find-Ferriss-Books-API-key";

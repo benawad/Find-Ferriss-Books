@@ -29,7 +29,7 @@ public class DownloadRunner implements Runnable {
         ItuneSearch ituneSearch = new ItuneSearch();
         ituneSearch.checkIfAudiobook(bookList);
         try {
-            FileOutputStream fileOutputStream = new FileOutputStream(Main.BOOK_OB_FILE);
+            FileOutputStream fileOutputStream = new FileOutputStream(CommandLineMain.BOOK_OB_FILE);
             ObjectOutputStream os = new ObjectOutputStream(fileOutputStream);
             for (Book book : bookList) {
                 os.writeObject(book);
