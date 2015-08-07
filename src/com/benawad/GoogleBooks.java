@@ -18,7 +18,7 @@ import java.util.Random;
 public class GoogleBooks {
     public static final String API_URL = "https://www.googleapis.com/books/v1/volumes?q=";
 
-    public List<Book> createBooks(List<String[]> bookList, String apiKey) {
+    public List<Book> createBooks(List<String[]> bookList) {
 
         List<Book> books = new ArrayList<>();
 
@@ -27,7 +27,7 @@ public class GoogleBooks {
             for(int n = 0; n < 5; ++n){
                 try {
                     System.out.println("Google Books API searching: " + book[0]);
-                    json = searchBook(book[0], apiKey);
+                    json = searchBook(book[0]);
                     break;
                 } catch (IOException e) {
                     //403 error = rate limit exceeded
@@ -57,12 +57,12 @@ public class GoogleBooks {
         return books;
     }
 
-    public static String[] toStringArray(JSONArray jsonArray) {
-        String[] stringArray = new String[jsonArray.length()];
+    public static ArrayList<String> toArrayList(JSONArray jsonArray) {
+        ArrayList<String> arraylist = new ArrayList<>();
         for (int i = 0; i < jsonArray.length(); i++) {
-            stringArray[i] = (String) jsonArray.get(i);
+            arraylist.add((String) jsonArray.get(i));
         }
-        return stringArray;
+        return arraylist;
     }
 
     private Book makeBook(String json) {
@@ -79,9 +79,11 @@ public class GoogleBooks {
             book.setSubtitle("No subtitle");
         }
         if(volumeInfo.has("authors")) {
-            book.setAuthors(toStringArray(volumeInfo.getJSONArray("authors")));
+            book.setAuthors(toArrayList(volumeInfo.getJSONArray("authors")));
         } else {
-            book.setAuthors(new String[]{"Unknown author"});
+            ArrayList<String> arrayList = new ArrayList<>();
+            arrayList.add("Unknown author");
+            book.setAuthors(arrayList);
         }
         if (volumeInfo.has("description")) {
             book.setDescription(volumeInfo.getString("description"));
@@ -94,9 +96,11 @@ public class GoogleBooks {
             book.setPageCount(0);
         }
         if(volumeInfo.has("categories")) {
-            book.setGenres(toStringArray(volumeInfo.getJSONArray("categories")));
+            book.setGenres(toArrayList(volumeInfo.getJSONArray("categories")));
         } else {
-            book.setGenres(new String[]{"Uncategorized"});
+            ArrayList<String> arrayList = new ArrayList<>();
+            arrayList.add("Uncategorized");
+            book.setGenres(arrayList);
         }
         if(jsonBook.getJSONObject("accessInfo").has("webReaderLink")) {
             book.setGoogle(jsonBook.getJSONObject("accessInfo").getString("webReaderLink"));
@@ -104,16 +108,13 @@ public class GoogleBooks {
             book.setGoogle("Link not available");
         }
         //assuming if the book is in Google's repository it must be an ebook
-        book.setEbook(true);
+        book.getGenres().add("eBook");
         return book;
     }
 
-    private String searchBook(String bookTitle, String apiKey) throws IOException {
+    private String searchBook(String bookTitle) throws IOException {
         String json = "";
-        if(!apiKey.isEmpty()){
-            apiKey = "&key=" + apiKey;
-        }
-        URL url = new URL(API_URL + bookTitle + apiKey);
+        URL url = new URL(API_URL + bookTitle);
         BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
         String line = null;
         while ((line = br.readLine()) != null) {

@@ -1,27 +1,26 @@
 package com.benawad.models;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Created by benawad on 7/27/15.
  */
 public class Book implements Serializable {
     String title;
-    String[] authors;
+    ArrayList<String> authors;
     String amazon;
-    boolean audiobook;
-    boolean ebook;
     String subtitle;
     String description;
     int pageCount;
-    String[] genres;
+    ArrayList<String> genres;
     String google;
     String apple;
     String audiobookDesc;
 
     public Book(){}
 
-    public Book(String title, String[] authors, String amazon, String subtitle, String description, int pageCount, String[] genres, String google, String apple, String audiobookDesc) {
+    public Book(String title, ArrayList<String> authors, String amazon, String subtitle, String description, int pageCount, ArrayList<String> genres, String google, String apple, String audiobookDesc) {
         this.title = title;
         this.authors = authors;
         this.amazon = amazon;
@@ -39,9 +38,9 @@ public class Book implements Serializable {
         String fTitle = String.format("%-12s%s\n","Title:", title);
         String fSubtitle = String.format("%-12s%s\n","Subtitle:", subtitle);
         String sAuthors = "";
-        for(int i = 0; i< authors.length; i++){
-            sAuthors += authors[i];
-            if(i != authors.length-1){
+        for(int i = 0; i< authors.size(); i++){
+            sAuthors += authors.get(i);
+            if(i != authors.size() -1){
                 sAuthors += ", ";
             }
         }
@@ -52,26 +51,26 @@ public class Book implements Serializable {
         String fGoogle = String.format("%-12s%s\n", "Google:", google);
         String fPageCount = String.format("%-12s%s\n", "Pages:", pageCount);
         String sGenres = "";
-        for(int i = 0; i < genres.length; i++){
-            sGenres += genres[i];
-            if(i != genres.length-1){
+        for(int i = 0; i < genres.size(); i++){
+            sGenres += genres.get(i);
+            if(i != genres.size() -1){
                 sGenres += ", ";
             }
         }
         String fGenres = String.format("%-12s%s\n", "Genres:", sGenres);
         String fAudiobookDesc = String.format("%-12s%s\n", "Itune's description: ", audiobookDesc);
         String formats = "";
-        if(ebook){
-            formats += "Ebook";
-        }
-        if(audiobook && ebook){
-            formats += ", Audiobook";
-        } else if (audiobook){
-            formats += "Audiobook";
-        }
-        if(!audiobook && !ebook){
-            formats += "Print";
-        }
+//        if(ebook){
+//            formats += "Ebook";
+//        }
+//        if(audiobook && ebook){
+//            formats += ", Audiobook";
+//        } else if (audiobook){
+//            formats += "Audiobook";
+//        }
+//        if(!audiobook && !ebook){
+//            formats += "Print";
+//        }
 
         String fFormat = String.format("%-12s%s\n", "Formats:", formats);
         info += fTitle + fSubtitle + fAuthors + fDescription + fAudiobookDesc + fPageCount + fGenres + fFormat + fAmazon + fApple + fGoogle;
@@ -104,11 +103,11 @@ public class Book implements Serializable {
         this.title = title;
     }
 
-    public String[] getAuthors() {
+    public ArrayList<String> getAuthors() {
         return authors;
     }
 
-    public void setAuthors(String[] authors) {
+    public void setAuthors(ArrayList<String> authors) {
         this.authors = authors;
     }
 
@@ -118,22 +117,6 @@ public class Book implements Serializable {
 
     public void setAmazon(String amazon) {
         this.amazon = amazon;
-    }
-
-    public boolean isAudiobook() {
-        return audiobook;
-    }
-
-    public void setAudiobook(boolean audiobook) {
-        this.audiobook = audiobook;
-    }
-
-    public boolean isEbook() {
-        return ebook;
-    }
-
-    public void setEbook(boolean ebook) {
-        this.ebook = ebook;
     }
 
     public String getSubtitle() {
@@ -160,11 +143,11 @@ public class Book implements Serializable {
         this.pageCount = pageCount;
     }
 
-    public String[] getGenres() {
+    public ArrayList<String> getGenres() {
         return genres;
     }
 
-    public void setGenres(String[] genres) {
+    public void setGenres(ArrayList<String> genres) {
         this.genres = genres;
     }
 
@@ -174,5 +157,17 @@ public class Book implements Serializable {
 
     public void setGoogle(String google) {
         this.google = google;
+    }
+
+    public static String authorsToString(ArrayList<String> authors) {
+        String authorsString = "";
+        for (int i = 0; i < authors.size(); i++){
+            if(i+1 != authors.size()){
+                authorsString += authors.get(i) + ", ";
+            } else {
+                authorsString += authors.get(i);
+            }
+        }
+        return authorsString;
     }
 }

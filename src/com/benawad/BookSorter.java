@@ -17,14 +17,6 @@ public class BookSorter {
     public void sortByType(List<Book> bookList){
         String audiobooks = "";
         String ebooks = "";
-        for(Book book : bookList){
-            if (book.isAudiobook()){
-                audiobooks += book.toString();
-            }
-            if(book.isEbook()){
-                ebooks += book.toString();
-            }
-        }
         FileManager fileManager = new FileManager();
         fileManager.saveFile(audiobooks, new File(AUDIOBOOK_FILE));
         fileManager.saveFile(ebooks, new File(EBOOK_FILE));

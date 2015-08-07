@@ -30,10 +30,9 @@ public class ItuneSearch {
             JSONArray results = top.getJSONArray("results");
             JSONObject result1 = results.getJSONObject(0);
             if(result1.getString("wrapperType").equals("audiobook")){
-                book.setAudiobook(true);
+                book.getGenres().add("Audiobook");
                 book.setAudiobookDesc(result1.getString("description"));
             } else {
-                book.setAudiobook(false);
                 book.setAudiobookDesc("NA");
             }
             if(result1.has("collectionViewUrl")) {
@@ -42,7 +41,6 @@ public class ItuneSearch {
                 book.setApple("Link not available");
             }
         } else {
-            book.setAudiobook(false);
             book.setApple("Link not available");
             book.setAudiobookDesc("NA");
         }

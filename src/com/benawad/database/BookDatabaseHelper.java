@@ -70,8 +70,8 @@ public class BookDatabaseHelper {
     }
 
     private Book convertRowToBook(ResultSet resultSet) throws SQLException{
-        String[] authors = GoogleBooks.toStringArray(new JSONArray(resultSet.getString("authors")));
-        String[] genres = GoogleBooks.toStringArray(new JSONArray(resultSet.getString("genres")));
+        ArrayList<String> authors = GoogleBooks.toArrayList(new JSONArray(resultSet.getString("authors")));
+        ArrayList<String> genres = GoogleBooks.toArrayList(new JSONArray(resultSet.getString("genres")));
         Book book = new Book(resultSet.getString("title"), authors, resultSet.getString("amazon"), resultSet.getString("subtitle"), resultSet.getString("description"), resultSet.getInt("pageCount"), genres, resultSet.getString("google"), resultSet.getString("apple"), resultSet.getString("audiobookDesc"));
         return book;
     }
