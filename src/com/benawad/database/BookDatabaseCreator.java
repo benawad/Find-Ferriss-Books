@@ -53,6 +53,8 @@ public class BookDatabaseCreator {
                     "google TEXT ," +
                     "apple TEXT ," +
                     "audiobookDesc TEXT ," +
+                    "audiobook BOOLEAN ," +
+                    "ebook BOOLEAN ," +
                     "PRIMARY KEY ( id )" +
                     ")";
             statement.executeUpdate(createTable);
@@ -75,16 +77,20 @@ public class BookDatabaseCreator {
         String genres = "'"+StringEscapeUtils.escapeEcmaScript(new JSONArray(book.getGenres().toArray()).toString())+"', ";
         String google = "'"+StringEscapeUtils.escapeEcmaScript(book.getGoogle())+"', ";
         String apple = "'"+StringEscapeUtils.escapeEcmaScript(book.getApple())+"', ";
-        String audiobookDesc = "'"+StringEscapeUtils.escapeEcmaScript(book.getAudiobookDesc())+"'";
+        String audiobookDesc = "'"+StringEscapeUtils.escapeEcmaScript(book.getAudiobookDesc())+"', ";
+        int audiobook = 0;
+        int ebook = 0;
+        if(book.isAudiobook()){
+            audiobook = 1;
+        }
+        if(book.isEbook()){
+            ebook = 1;
+        }
 
         String sql = "INSERT IGNORE INTO " + BOOKS_TABLE +
-                "(title, authors, amazon, subtitle, description, pageCount, genres, google, apple, audiobookDesc)" +
+                "(title, authors, amazon, subtitle, description, pageCount, genres, google, apple, audiobookDesc, audiobook, ebook)" +
                 " VALUES" +
-                " (" + title + authors + amazon + subtitle + description + pageCount + genres + google + apple + audiobookDesc + ")";
-        System.out.println(sql);
-        System.out.println(new JSONArray(book.getAuthors().toArray()).toString());
-        System.out.println(StringEscapeUtils.escapeEcmaScript(new JSONArray(book.getAuthors().toArray()).toString()));
-        System.out.println(authors);
+                " (" + title + authors + amazon + subtitle + description + pageCount + genres + google + apple + audiobookDesc + audiobook + ", " + ebook + ")";
         Statement statement = connection.createStatement();
         // insert book into table
         statement.executeUpdate(sql);

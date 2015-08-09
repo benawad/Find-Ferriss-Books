@@ -37,6 +37,11 @@ public class BookTableModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
+
+        if(books.size() == 0){
+            return null;
+        }
+
         Book book = books.get(rowIndex);
 
         switch (columnIndex){
@@ -49,8 +54,8 @@ public class BookTableModel extends AbstractTableModel {
         }
     }
 
-    @Override
-    public Class getColumnClass(int c){
-        return getValueAt(0, c).getClass();
-    }
+//    @Override
+//    public Class getColumnClass(int c){
+//        return getValueAt(0, c).getClass();
+//    }
 }

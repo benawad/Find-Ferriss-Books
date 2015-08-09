@@ -17,10 +17,28 @@ public class Book implements Serializable {
     String google;
     String apple;
     String audiobookDesc;
+    boolean audiobook;
+    boolean ebook;
+
+    public boolean isAudiobook() {
+        return audiobook;
+    }
+
+    public void setAudiobook(boolean audiobook) {
+        this.audiobook = audiobook;
+    }
+
+    public boolean isEbook() {
+        return ebook;
+    }
+
+    public void setEbook(boolean ebook) {
+        this.ebook = ebook;
+    }
 
     public Book(){}
 
-    public Book(String title, ArrayList<String> authors, String amazon, String subtitle, String description, int pageCount, ArrayList<String> genres, String google, String apple, String audiobookDesc) {
+    public Book(String title, ArrayList<String> authors, String amazon, String subtitle, String description, int pageCount, ArrayList<String> genres, String google, String apple, String audiobookDesc, boolean audiobook, boolean ebook) {
         this.title = title;
         this.authors = authors;
         this.amazon = amazon;
@@ -31,6 +49,8 @@ public class Book implements Serializable {
         this.google = google;
         this.apple = apple;
         this.audiobookDesc = audiobookDesc;
+        this.audiobook = audiobook;
+        this.ebook = ebook;
     }
 
     public String toString(){

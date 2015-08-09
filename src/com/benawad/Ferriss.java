@@ -6,10 +6,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Ferriss {
 
@@ -28,6 +25,20 @@ public class Ferriss {
         temp.addAll(books);
         books.clear();
         books.addAll(temp);
+
+//        List<String> title_author = new ArrayList<>();
+//        for(String[] array : books){
+//            title_author.add(array[0] + " by " + array[1]);
+//        }
+//        Collections.sort(title_author, new Comparator<String>() {
+//            @Override
+//            public int compare(String o1, String o2) {
+//                return o1.compareToIgnoreCase(o2);
+//            }
+//        });
+//        for(String s : title_author){
+//            System.out.println(s);
+//        }
 
         return books;
     }
@@ -79,35 +90,12 @@ public class Ferriss {
                                 //so we can check if the <a>'s href is linking to amazon or audible
                                 //if it is not, it is probably not a book and we don't want it
                                 String href = li.getElementsByTag("a").get(0).attr("href");
-                                if(href.contains("amazon.com")){
-                                    //getting book title from amazon link
-                                    //example link: http://www.amazon.com/The-Checklist-Manifesto-Things-Right/dp/0312430000/?tag=offsitoftimfe-20
-                                    //we just want The-Checklist-Manifesto-Things-Right
-                                    String end = href.substring(href.indexOf("com/"));
-                                    int loc1 = end.indexOf("/")+1;
-                                    String newEnd = end.replaceFirst("/", ":");
-                                    int loc2 = newEnd.indexOf("/");
-                                    String title = newEnd.substring(loc1, loc2);
-
-                                    //the link is different if tim uses an affiliate link
-                                    //for now just ignoring those
-                                    if(!title.equals("gp")){
+                                if(href.contains("amazon.com") || href.contains("audible.com")) {
+                                    String title = li.getElementsByTag("a").get(0).text().trim();
+                                    if (unique(title, href, books)) {
                                         books.add(new String[]{title, href});
                                         System.out.println("Book added to the list: " + title);
                                     }
-                                } else if(href.contains("audible.com")){
-                                    //example link: http://www.audible.com/pd/Teens/The-Graveyard-Book-Audiobook/B002V8DEKC/?tag=offsitoftimfe-20
-                                    //we want The-Graveyard-Book-Audiobook
-                                    //the url format is audible.com/pd/category/bookname
-                                    String com = href.substring(href.indexOf("com"));
-                                    com = com.replaceFirst("/", ":");
-                                    com = com.replaceFirst("/", ":");
-                                    int loc1 = com.indexOf("/")+1;
-                                    com = com.replaceFirst("/", ":");
-                                    int loc2 = com.indexOf("/");
-                                    String title = com.substring(loc1, loc2);
-                                    books.add(new String[]{title, href});
-                                    System.out.println("Book added to the list: " + title);
                                 }
                             }
                         }
@@ -120,6 +108,16 @@ public class Ferriss {
             }
         }
         return books;
+    }
+
+    private boolean unique(String title, String url, List<String[]> books) {
+        boolean unique = true;
+        for(String[] array: books){
+            if(title.equals(array[0]) || url.equals(array[1])){
+                unique = false;
+            }
+        }
+        return unique;
     }
 
 }

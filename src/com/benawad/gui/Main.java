@@ -1,5 +1,6 @@
 package com.benawad.gui;
 
+import com.benawad.BookSorter;
 import com.benawad.DownloadRunner;
 import com.benawad.database.BookDatabaseHelper;
 import com.benawad.models.Book;
@@ -9,8 +10,10 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Main extends JFrame {
 
@@ -61,6 +64,7 @@ public class Main extends JFrame {
         splitPane.setRightComponent(scrollPane);
 
         table = new JTable();
+        table.setAutoCreateRowSorter(true);
         scrollPane.setViewportView(table);
 
         panel = new JPanel();
@@ -69,10 +73,12 @@ public class Main extends JFrame {
         contentPane.add(panel, BorderLayout.NORTH);
 
         audiobookButton = new JRadioButton("Audiobooks");
+        audiobookButton.addActionListener(new RefreshScreenListener());
         panel.add(audiobookButton);
         audiobookButton.setSelected(true);
 
         ebooksButton = new JRadioButton("eBooks");
+        ebooksButton.addActionListener(new RefreshScreenListener());
         panel.add(ebooksButton);
         ebooksButton.setSelected(true);
 
@@ -80,34 +86,75 @@ public class Main extends JFrame {
         contentPane.add(downloadBooksButton, BorderLayout.SOUTH);
         downloadBooksButton.addActionListener(new DownloadListener());
 
-        java.util.List<Book> books = null;
-        // fill jtable with books
-        try {
-            bookDatabaseHelper = new BookDatabaseHelper();
-            books = bookDatabaseHelper.getAllBooks();
-            BookTableModel model = new BookTableModel(books);
-            table.setModel(model);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "You need to download the books", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-
-        // fill jlist with categories
         list = new JList();
         JScrollPane listScrollPane = new JScrollPane();
         splitPane.setLeftComponent(listScrollPane);
         listScrollPane.setViewportView(list);
 
-        if(!books.isEmpty()) {
-            java.util.List<String> categories = getAllCategories(books);
-            DefaultListModel listModel = new DefaultListModel();
-            for (String cat : categories) {
-                listModel.addElement(cat);
-            }
-            list.setModel(listModel);
+        list.addListSelectionListener(e -> {
+                if(!e.getValueIsAdjusting()) {
+                    refreshScreen();
+                }
+        });
+        refreshScreen();
+    }
+
+    public class RefreshScreenListener implements ActionListener{
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            refreshScreen();
         }
     }
 
-    private List<String> getAllCategories(List<Book> books) {
+    public void refreshScreen(){
+        try {
+            bookDatabaseHelper = new BookDatabaseHelper();
+            List<Book> allBooks = bookDatabaseHelper.getAllBooks();
+
+            // fill the table
+            List<Book> filteredBooks = null;
+            if(list.isSelectionEmpty()){
+                filteredBooks = BookSorter.sort(
+                        ebooksButton.isSelected(),
+                        audiobookButton.isSelected(),
+                        allBooks);
+            } else {
+                filteredBooks = BookSorter.sort(
+                        ebooksButton.isSelected(),
+                        audiobookButton.isSelected(),
+                        (String)list.getSelectedValue(),
+                        allBooks);
+            }
+            BookTableModel model = new BookTableModel(filteredBooks);
+            table.setModel(model);
+
+            // fill the categories list
+            List<String> categories = getAllCategories(allBooks);
+            // check to see if any there are any new categories
+            // if so refresh the list
+            // if not don't refresh it
+            Set<String> listCats = new HashSet<>();
+            for(int i = 0; i < list.getModel().getSize(); i++){
+                listCats.add((String)list.getModel().getElementAt(i));
+            }
+            // converting the lists to sets because I want to ignore order
+            Set<String> catSet = new HashSet<>();
+            catSet.addAll(categories);
+            if(!listCats.equals(catSet)) {
+                DefaultListModel listModel = new DefaultListModel();
+                for (String cat : categories) {
+                    listModel.addElement(cat);
+                }
+                list.setModel(listModel);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+//            JOptionPane.showMessageDialog(this, "You need to download the books " + e, "Database Empty", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    public static List<String> getAllCategories(List<Book> books) {
         List<String> cats = new ArrayList<>();
         for(Book book : books){
             cats.addAll(book.getGenres());
@@ -124,7 +171,7 @@ public class Main extends JFrame {
         public void actionPerformed(ActionEvent e) {
             System.out.println("downloading...");
 
-            Runnable threadJob = new DownloadRunner();
+            Runnable threadJob = new DownloadRunner(Main.this);
             Thread downloadThread = new Thread(threadJob);
             downloadThread.start();
         }

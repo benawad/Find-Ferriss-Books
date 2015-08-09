@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -17,6 +18,7 @@ import java.util.Random;
  */
 public class GoogleBooks {
     public static final String API_URL = "https://www.googleapis.com/books/v1/volumes?q=";
+    public static final String EBOOK = "eBook";
 
     public List<Book> createBooks(List<String[]> bookList) {
 
@@ -48,13 +50,25 @@ public class GoogleBooks {
             }
             if(!json.equals("")) {
                 Book newBook = makeBook(json);
-                newBook.setAmazon(book[1]);
-                books.add(newBook);
+                if(unique(newBook, books)) {
+                    newBook.setAmazon(book[1]);
+                    books.add(newBook);
+                }
             } else {
                 new Exception("Google Books API - rate limit exceeded");
             }
         }
         return books;
+    }
+
+    public boolean unique(Book book, List<Book> books){
+        boolean unique = true;
+        for(Book b : books){
+            if(b.getTitle().equals(book.getTitle())){
+                unique = false;
+            }
+        }
+        return unique;
     }
 
     public static ArrayList<String> toArrayList(JSONArray jsonArray) {
@@ -108,13 +122,13 @@ public class GoogleBooks {
             book.setGoogle("Link not available");
         }
         //assuming if the book is in Google's repository it must be an ebook
-        book.getGenres().add("eBook");
+        book.setEbook(true);
         return book;
     }
 
     private String searchBook(String bookTitle) throws IOException {
         String json = "";
-        URL url = new URL(API_URL + bookTitle);
+        URL url = new URL(API_URL + URLEncoder.encode(bookTitle, "UTF-8"));
         BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
         String line = null;
         while ((line = br.readLine()) != null) {
