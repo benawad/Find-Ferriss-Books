@@ -1,5 +1,10 @@
 package com.benawad.gui;
 
+
+
+
+
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -30,20 +35,28 @@ public class BookFrame extends JFrame {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
         JPanel panel_1 = new JPanel();
+        panel_1.setLayout(new BorderLayout());
         panel.add(panel_1);
 
-        JLabel title = new JLabel(sTitle);
-        title.setFont(new Font("Lucida Grande", Font.PLAIN, 28));
+        JLabel title = new JLabel("<html><p>"+sTitle+"</p></html>");
+        title.setFont(new Font("Lucida Grande", Font.PLAIN, 36));
+        title.setHorizontalAlignment(SwingConstants.CENTER);
         panel_1.add(title);
 
         JPanel panel_2 = new JPanel();
-        FlowLayout flowLayout = (FlowLayout) panel_2.getLayout();
-        flowLayout.setVgap(20);
+        panel_2.setLayout(new BorderLayout());
         panel.add(panel_2);
 
-        JLabel subtitle = new JLabel(sSubtitle);
+        JLabel subtitle = new JLabel("<html>"+sSubtitle+"</html>");
         subtitle.setFont(new Font("Lucida Grande", Font.PLAIN, 18));
+        subtitle.setHorizontalAlignment(SwingConstants.CENTER);
         panel_2.add(subtitle);
+
+        JSeparator separator = new JSeparator();
+        panel_2.add(separator, BorderLayout.SOUTH);
+
+        JSeparator separator_1 = new JSeparator();
+        panel_2.add(separator_1, BorderLayout.NORTH);
 
         JPanel panel_3 = new JPanel();
         contentPane.add(panel_3, BorderLayout.CENTER);
@@ -75,8 +88,15 @@ public class BookFrame extends JFrame {
         gbl_panel_5.columnWidths = new int[]{117, 0};
         gbl_panel_5.rowHeights = new int[]{29, 29, 29, 0};
         gbl_panel_5.columnWeights = new double[]{0.0, Double.MIN_VALUE};
-        gbl_panel_5.rowWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE};
+        gbl_panel_5.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0};
         panel_5.setLayout(gbl_panel_5);
+
+        JLabel linkDescription = new JLabel("Available at:");
+        GridBagConstraints gbc_linkDescription = new GridBagConstraints();
+        gbc_linkDescription.insets = new Insets(0, 0, 5, 0);
+        gbc_linkDescription.gridx = 0;
+        gbc_linkDescription.gridy = 0;
+        panel_5.add(linkDescription, gbc_linkDescription);
 
         JButton amazon = new JButton("<HTML><FONT color=\\\"#000099\\\"><U>"+sAmazon+"</U></FONT></HTML>");
         amazon.setHorizontalAlignment(SwingConstants.LEFT);
@@ -89,7 +109,7 @@ public class BookFrame extends JFrame {
         gbc_amazon.anchor = GridBagConstraints.WEST;
         gbc_amazon.insets = new Insets(0, 0, 5, 0);
         gbc_amazon.gridx = 0;
-        gbc_amazon.gridy = 0;
+        gbc_amazon.gridy = 1;
         panel_5.add(amazon, gbc_amazon);
 
         JButton google = new JButton("<HTML><FONT color=\\\"#000099\\\"><U>"+sGoogle+"</U></FONT></HTML>");
@@ -103,7 +123,7 @@ public class BookFrame extends JFrame {
         gbc_google.anchor = GridBagConstraints.WEST;
         gbc_google.insets = new Insets(0, 0, 5, 0);
         gbc_google.gridx = 0;
-        gbc_google.gridy = 1;
+        gbc_google.gridy = 2;
         panel_5.add(google, gbc_google);
 
         JButton apple = new JButton("<HTML><FONT color=\\\"#000099\\\"><U>"+sApple+"</U></FONT></HTML>");
@@ -116,7 +136,7 @@ public class BookFrame extends JFrame {
         GridBagConstraints gbc_apple = new GridBagConstraints();
         gbc_apple.anchor = GridBagConstraints.WEST;
         gbc_apple.gridx = 0;
-        gbc_apple.gridy = 2;
+        gbc_apple.gridy = 3;
         panel_5.add(apple, gbc_apple);
 
         JScrollPane scrollPane = new JScrollPane();

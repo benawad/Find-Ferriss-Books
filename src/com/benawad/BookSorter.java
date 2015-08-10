@@ -10,26 +10,51 @@ import java.util.List;
  */
 public class BookSorter {
 
-   public static List<Book> sort(boolean ebooks, boolean audiobooks, String category, List<Book> bookList) {
+   public static List<Book> sort(boolean ebooks, boolean audiobooks, boolean all, String category, List<Book> bookList) {
       List<Book> rightBooks = new ArrayList<>();
 
-      for(Book book : bookList){
-         boolean matchesCategory = contains(category, book.getCategories());
-         if(book.isEbook() == ebooks && book.isAudiobook() == audiobooks && matchesCategory == true){
-            rightBooks.add(book);
+      if(ebooks){
+         for(Book book : bookList){
+            boolean matchesCategory = contains(category, book.getCategories());
+            if(book.isAudiobook() != true && matchesCategory == true){
+               rightBooks.add(book);
+            }
+         }
+      } else if (audiobooks){
+           for(Book book : bookList){
+            boolean matchesCategory = contains(category, book.getCategories());
+            if(book.isAudiobook() == audiobooks && matchesCategory == true){
+               rightBooks.add(book);
+            }
+         }
+      } else if (all){
+         for(Book book : bookList){
+            boolean matchesCategory = contains(category, book.getCategories());
+            if(matchesCategory){
+               rightBooks.add(book);
+            }
          }
       }
-
       return  rightBooks;
    }
 
-   public static List<Book> sort(boolean ebooks, boolean audiobooks, List<Book> bookList) {
+   public static List<Book> sort(boolean ebooks, boolean audiobooks, boolean all, List<Book> bookList) {
       List<Book> rightBooks = new ArrayList<>();
 
-      for(Book book : bookList){
-         if(book.isEbook() == ebooks && book.isAudiobook() == audiobooks){
-            rightBooks.add(book);
+      if(ebooks){
+         for(Book book : bookList){
+            if(book.isAudiobook() != true){
+               rightBooks.add(book);
+            }
          }
+      } else if (audiobooks){
+         for(Book book : bookList){
+            if(book.isAudiobook() == audiobooks){
+               rightBooks.add(book);
+            }
+         }
+      } else if (all){
+         rightBooks = bookList;
       }
 
       return  rightBooks;

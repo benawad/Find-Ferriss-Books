@@ -24,6 +24,8 @@ public class Main extends JFrame {
     private JTable table;
     private JPanel panel;
     private JButton downloadBooksButton;
+    private JButton clearButton;
+    private JRadioButton allButton;
     private JRadioButton audiobookButton;
     private JRadioButton ebooksButton;
     private JList list;
@@ -73,7 +75,7 @@ public class Main extends JFrame {
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if(e.getClickCount() == 1){
+                if (e.getClickCount() == 1) {
                     try {
                         BookDatabaseHelper helper = new BookDatabaseHelper();
                         Book book = helper.getBook(table.getValueAt(table.getSelectedRow(), 0).toString());
@@ -117,15 +119,28 @@ public class Main extends JFrame {
         flowLayout.setAlignment(FlowLayout.CENTER);
         contentPane.add(panel, BorderLayout.NORTH);
 
+        clearButton = new JButton("Clear Selection");
+        clearButton.addActionListener(new ClearSelectionListener());
+        panel.add(clearButton);
+
+        allButton = new JRadioButton("All");
+        allButton.addActionListener(new RefreshScreenListener());
+        allButton.setSelected(true);
+        panel.add(allButton);
+
         audiobookButton = new JRadioButton("Audiobooks");
         audiobookButton.addActionListener(new RefreshScreenListener());
         panel.add(audiobookButton);
-        audiobookButton.setSelected(true);
 
         ebooksButton = new JRadioButton("eBooks");
         ebooksButton.addActionListener(new RefreshScreenListener());
         panel.add(ebooksButton);
-        ebooksButton.setSelected(true);
+
+        ButtonGroup radioButtons = new ButtonGroup();
+
+        radioButtons.add(allButton);
+        radioButtons.add(audiobookButton);
+        radioButtons.add(ebooksButton);
 
         downloadBooksButton = new JButton("Download Books");
         contentPane.add(downloadBooksButton, BorderLayout.SOUTH);
@@ -163,11 +178,13 @@ public class Main extends JFrame {
                 filteredBooks = BookSorter.sort(
                         ebooksButton.isSelected(),
                         audiobookButton.isSelected(),
+                        allButton.isSelected(),
                         allBooks);
             } else {
                 filteredBooks = BookSorter.sort(
                         ebooksButton.isSelected(),
                         audiobookButton.isSelected(),
+                        allButton.isSelected(),
                         (String)list.getSelectedValue(),
                         allBooks);
             }
@@ -219,6 +236,15 @@ public class Main extends JFrame {
             Runnable threadJob = new DownloadRunner(Main.this);
             Thread downloadThread = new Thread(threadJob);
             downloadThread.start();
+        }
+    }
+
+    private class ClearSelectionListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            allButton.setSelected(true);
+            list.clearSelection();
+            refreshScreen();
         }
     }
 }
