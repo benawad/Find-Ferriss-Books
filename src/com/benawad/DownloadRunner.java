@@ -21,25 +21,33 @@ public class DownloadRunner implements Runnable {
 
     @Override
     public void run() {
-        Ferriss ferriss = new Ferriss();
-        GoogleBooks googleBooks = new GoogleBooks();
-        List<Book> bookList = googleBooks.createBooks(ferriss.downloadAllBooks());
-        ItuneSearch ituneSearch = new ItuneSearch();
-        ituneSearch.checkIfAudiobook(bookList);
+        main.isDownloading = true;
 
-        BookDatabaseCreator creator = null;
         try {
-            creator = new BookDatabaseCreator();
+            Ferriss ferriss = new Ferriss();
+            GoogleBooks googleBooks = new GoogleBooks();
+            List<Book> bookList = googleBooks.createBooks(ferriss.downloadAllBooks());
+            ItuneSearch ituneSearch = new ItuneSearch();
+            ituneSearch.checkIfAudiobook(bookList);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try{
-            for(Book book : bookList){
-                creator.addBookToDatabase(book);
+            BookDatabaseCreator creator = null;
+            try {
+                creator = new BookDatabaseCreator();
+
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (SQLException e) {
+            try {
+                for (Book book : bookList) {
+                    creator.addBookToDatabase(book);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } catch (Exception e){
             e.printStackTrace();
+        } finally {
+            main.isDownloading = false;
         }
 
         main.refreshScreen();

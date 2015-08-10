@@ -30,6 +30,8 @@ public class Main extends JFrame {
     private JRadioButton ebooksButton;
     private JList list;
     private JSplitPane splitPane;
+    public static final String GOOGLE_API_KEY_LINK = "https://developers.google.com/api-client-library/python/guide/aaa_apikeys";
+    public boolean isDownloading = false;
 
     public static final String TITLE = "Find Ferriss Books";
 
@@ -50,7 +52,8 @@ public class Main extends JFrame {
             }
         });
     }
-/**
+
+    /**
      * Create the frame.
      */
     public Main() {
@@ -152,14 +155,14 @@ public class Main extends JFrame {
         listScrollPane.setViewportView(list);
 
         list.addListSelectionListener(e -> {
-                if(!e.getValueIsAdjusting()) {
-                    refreshScreen();
-                }
+            if (!e.getValueIsAdjusting()) {
+                refreshScreen();
+            }
         });
         refreshScreen();
     }
 
-    public class RefreshScreenListener implements ActionListener{
+    public class RefreshScreenListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -167,14 +170,14 @@ public class Main extends JFrame {
         }
     }
 
-    public void refreshScreen(){
+    public void refreshScreen() {
         try {
             bookDatabaseHelper = new BookDatabaseHelper();
             List<Book> allBooks = bookDatabaseHelper.getAllBooks();
 
             // fill the table
             List<Book> filteredBooks = null;
-            if(list.isSelectionEmpty()){
+            if (list.isSelectionEmpty()) {
                 filteredBooks = BookSorter.sort(
                         ebooksButton.isSelected(),
                         audiobookButton.isSelected(),
@@ -185,7 +188,7 @@ public class Main extends JFrame {
                         ebooksButton.isSelected(),
                         audiobookButton.isSelected(),
                         allButton.isSelected(),
-                        (String)list.getSelectedValue(),
+                        (String) list.getSelectedValue(),
                         allBooks);
             }
             BookTableModel model = new BookTableModel(filteredBooks);
@@ -197,13 +200,13 @@ public class Main extends JFrame {
             // if so refresh the list
             // if not don't refresh it
             Set<String> listCats = new HashSet<>();
-            for(int i = 0; i < list.getModel().getSize(); i++){
-                listCats.add((String)list.getModel().getElementAt(i));
+            for (int i = 0; i < list.getModel().getSize(); i++) {
+                listCats.add((String) list.getModel().getElementAt(i));
             }
             // converting the lists to sets because I want to ignore order
             Set<String> catSet = new HashSet<>();
             catSet.addAll(categories);
-            if(!listCats.equals(catSet)) {
+            if (!listCats.equals(catSet)) {
                 DefaultListModel listModel = new DefaultListModel();
                 for (String cat : categories) {
                     listModel.addElement(cat);
@@ -212,13 +215,12 @@ public class Main extends JFrame {
             }
         } catch (Exception e) {
             e.printStackTrace();
-//            JOptionPane.showMessageDialog(this, "You need to download the books " + e, "Database Empty", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
     public static List<String> getAllCategories(List<Book> books) {
         List<String> cats = new ArrayList<>();
-        for(Book book : books){
+        for (Book book : books) {
             cats.addAll(book.getCategories());
         }
         Set<String> temp = new HashSet<>();
@@ -231,11 +233,31 @@ public class Main extends JFrame {
     class DownloadListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.out.println("downloading...");
 
-            Runnable threadJob = new DownloadRunner(Main.this);
-            Thread downloadThread = new Thread(threadJob);
-            downloadThread.start();
+            if (isDownloading) {
+                JOptionPane.showMessageDialog(null, "Currently downloading the books", "Already Started", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JButton googleLink = new JButton("<HTML>The program uses the <FONT color=\\\"#000099\\\"><U>Google Books API</U></FONT>.<br> The download will take 15 minutes unless you click the link,<br> get an API key, enter it into the textbox below in which case it will take 3 minutes.</HTML>");
+                googleLink.setHorizontalAlignment(SwingConstants.LEFT);
+                googleLink.setBorderPainted(false);
+                googleLink.setOpaque(false);
+                googleLink.setBackground(Color.WHITE);
+                googleLink.setToolTipText(GOOGLE_API_KEY_LINK);
+                googleLink.addActionListener(new LinkListener(GOOGLE_API_KEY_LINK));
+                JTextField apiKey = new JTextField();
+                final JComponent[] inputs = new JComponent[]{
+                        googleLink,
+                        apiKey
+                };
+                int selectedOption = JOptionPane.showConfirmDialog(null, inputs, "Download Books", JOptionPane.OK_CANCEL_OPTION);
+
+                if (selectedOption == JOptionPane.YES_OPTION) {
+                    Runnable threadJob = new DownloadRunner(Main.this);
+                    Thread downloadThread = new Thread(threadJob);
+                    downloadThread.start();
+                }
+
+            }
         }
     }
 
