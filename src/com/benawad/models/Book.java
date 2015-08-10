@@ -13,7 +13,7 @@ public class Book implements Serializable {
     String subtitle;
     String description;
     int pageCount;
-    ArrayList<String> genres;
+    ArrayList<String> categories;
     String google;
     String apple;
     String audiobookDesc;
@@ -45,7 +45,7 @@ public class Book implements Serializable {
         this.subtitle = subtitle;
         this.description = description;
         this.pageCount = pageCount;
-        this.genres = genres;
+        this.categories = genres;
         this.google = google;
         this.apple = apple;
         this.audiobookDesc = audiobookDesc;
@@ -71,9 +71,9 @@ public class Book implements Serializable {
         String fGoogle = String.format("%-12s%s\n", "Google:", google);
         String fPageCount = String.format("%-12s%s\n", "Pages:", pageCount);
         String sGenres = "";
-        for(int i = 0; i < genres.size(); i++){
-            sGenres += genres.get(i);
-            if(i != genres.size() -1){
+        for(int i = 0; i < categories.size(); i++){
+            sGenres += categories.get(i);
+            if(i != categories.size() -1){
                 sGenres += ", ";
             }
         }
@@ -163,12 +163,12 @@ public class Book implements Serializable {
         this.pageCount = pageCount;
     }
 
-    public ArrayList<String> getGenres() {
-        return genres;
+    public ArrayList<String> getCategories() {
+        return categories;
     }
 
-    public void setGenres(ArrayList<String> genres) {
-        this.genres = genres;
+    public void setCategories(ArrayList<String> categories) {
+        this.categories = categories;
     }
 
     public String getGoogle() {

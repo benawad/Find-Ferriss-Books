@@ -2,6 +2,7 @@ package com.benawad.database;
 
 import com.benawad.GoogleBooks;
 import com.benawad.models.Book;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.json.JSONArray;
 
 import java.io.FileInputStream;
@@ -82,6 +83,24 @@ public class BookDatabaseHelper {
         ArrayList<String> genres = GoogleBooks.toArrayList(new JSONArray(resultSet.getString("genres")));
         Book book = new Book(resultSet.getString("title"), authors, resultSet.getString("amazon"), resultSet.getString("subtitle"), resultSet.getString("description"), resultSet.getInt("pageCount"), genres, resultSet.getString("google"), resultSet.getString("apple"), resultSet.getString("audiobookDesc"), audiobook, ebook);
         return book;
+    }
+
+    public Book getBook(String title) throws SQLException {
+        Statement statement = null;
+        ResultSet resultSet = null;
+
+        String encodedTitle = "'"+StringEscapeUtils.escapeEcmaScript(title) + "'";
+        statement = connection.createStatement();
+        String sql = "SELECT * FROM books WHERE title="+encodedTitle;
+        resultSet = statement.executeQuery(sql);
+
+        Book book = null;
+        if(resultSet.next()) {
+            book = convertRowToBook(resultSet);
+        }
+
+        return book;
+
     }
 
 }

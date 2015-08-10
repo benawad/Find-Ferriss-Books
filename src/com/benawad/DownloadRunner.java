@@ -26,6 +26,7 @@ public class DownloadRunner implements Runnable {
         List<Book> bookList = googleBooks.createBooks(ferriss.downloadAllBooks());
         ItuneSearch ituneSearch = new ItuneSearch();
         ituneSearch.checkIfAudiobook(bookList);
+
         BookDatabaseCreator creator = null;
         try {
             creator = new BookDatabaseCreator();

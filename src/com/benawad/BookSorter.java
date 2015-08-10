@@ -14,7 +14,7 @@ public class BookSorter {
       List<Book> rightBooks = new ArrayList<>();
 
       for(Book book : bookList){
-         boolean matchesCategory = contains(category, book.getGenres());
+         boolean matchesCategory = contains(category, book.getCategories());
          if(book.isEbook() == ebooks && book.isAudiobook() == audiobooks && matchesCategory == true){
             rightBooks.add(book);
          }

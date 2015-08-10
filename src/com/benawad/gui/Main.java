@@ -4,12 +4,15 @@ import com.benawad.BookSorter;
 import com.benawad.DownloadRunner;
 import com.benawad.database.BookDatabaseHelper;
 import com.benawad.models.Book;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -26,6 +29,7 @@ public class Main extends JFrame {
     private JList list;
     private JSplitPane splitPane;
 
+    public static final String TITLE = "Find Ferriss Books";
 
     private BookDatabaseHelper bookDatabaseHelper;
 
@@ -49,7 +53,7 @@ public class Main extends JFrame {
      */
     public Main() {
 
-        setTitle("Find Ferriss Books");
+        setTitle(TITLE);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 950, 550);
         contentPane = new JPanel();
@@ -65,6 +69,47 @@ public class Main extends JFrame {
 
         table = new JTable();
         table.setAutoCreateRowSorter(true);
+
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(e.getClickCount() == 1){
+                    try {
+                        BookDatabaseHelper helper = new BookDatabaseHelper();
+                        Book book = helper.getBook(table.getValueAt(table.getSelectedRow(), 0).toString());
+                        EventQueue.invokeLater(new Runnable() {
+                            public void run() {
+                                try {
+                                    String subtitle = "";
+                                    if (!book.getSubtitle().equals("No subtitle")) {
+                                        subtitle = book.getSubtitle();
+                                    }
+                                    String authors = "Authors: " + Book.authorsToString(book.getAuthors());
+                                    String pageCount = "Pages: " + book.getPageCount();
+                                    String categories = "Categories: " + Book.authorsToString(book.getCategories());
+                                    String formats = "Formats: ";
+                                    if (book.isEbook() && book.isAudiobook()) {
+                                        formats += "eBook, Audiobook";
+                                    } else if (book.isEbook() && !book.isAudiobook()) {
+                                        formats += "eBook";
+                                    } else if (!book.isEbook() && book.isAudiobook()) {
+                                        formats += "Audiobook";
+                                    } else {
+                                        formats += "Print";
+                                    }
+                                    BookFrame frame = new BookFrame(book.getTitle(), subtitle, authors, pageCount, categories, formats, book.getAmazon(), book.getGoogle(), book.getApple(), StringEscapeUtils.unescapeEcmaScript(book.getDescription()));
+                                    frame.setVisible(true);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
+                }
+            }
+        });
         scrollPane.setViewportView(table);
 
         panel = new JPanel();
@@ -157,7 +202,7 @@ public class Main extends JFrame {
     public static List<String> getAllCategories(List<Book> books) {
         List<String> cats = new ArrayList<>();
         for(Book book : books){
-            cats.addAll(book.getGenres());
+            cats.addAll(book.getCategories());
         }
         Set<String> temp = new HashSet<>();
         temp.addAll(cats);
@@ -177,23 +222,3 @@ public class Main extends JFrame {
         }
     }
 }
-
-
-//
-//    class LinkListener implements ActionListener {
-//
-//        @Override
-//        public void actionPerformed(ActionEvent e) {
-//            try {
-//go to this url in the user's default browser
-//                URL url = new URL("");
-//
-//                Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
-//                if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
-//                    desktop.browse(url.toURI());
-//                }
-//            } catch (URISyntaxException | IOException e1) {
-//                e1.printStackTrace();
-//            }
-//        }
-//    }

@@ -1,7 +1,6 @@
 package com.benawad.database;
 
 import com.benawad.models.Book;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.json.JSONArray;
 
 import java.io.FileInputStream;
@@ -66,55 +65,25 @@ public class BookDatabaseCreator {
     }
 
     public void addBookToDatabase(Book book) throws SQLException {
-        String title = "'"+ StringEscapeUtils.escapeEcmaScript(book.getTitle())+"', ";
-        // converting array to string to be stored in database
-        String authors = "'"+StringEscapeUtils.escapeEcmaScript(new JSONArray(book.getAuthors().toArray()).toString())+"', ";
-        String amazon = "'"+StringEscapeUtils.escapeEcmaScript(book.getAmazon())+"', ";
-        String subtitle = "'"+StringEscapeUtils.escapeEcmaScript(book.getSubtitle())+"', ";
-        String description = "'"+StringEscapeUtils.escapeEcmaScript(book.getDescription())+"', ";
-        String pageCount = book.getPageCount()+", ";
-        // converting array to string to be stored in database
-        String genres = "'"+StringEscapeUtils.escapeEcmaScript(new JSONArray(book.getGenres().toArray()).toString())+"', ";
-        String google = "'"+StringEscapeUtils.escapeEcmaScript(book.getGoogle())+"', ";
-        String apple = "'"+StringEscapeUtils.escapeEcmaScript(book.getApple())+"', ";
-        String audiobookDesc = "'"+StringEscapeUtils.escapeEcmaScript(book.getAudiobookDesc())+"', ";
-        int audiobook = 0;
-        int ebook = 0;
-        if(book.isAudiobook()){
-            audiobook = 1;
-        }
-        if(book.isEbook()){
-            ebook = 1;
-        }
-
         String sql = "INSERT IGNORE INTO " + BOOKS_TABLE +
                 "(title, authors, amazon, subtitle, description, pageCount, genres, google, apple, audiobookDesc, audiobook, ebook)" +
-                " VALUES" +
-                " (" + title + authors + amazon + subtitle + description + pageCount + genres + google + apple + audiobookDesc + audiobook + ", " + ebook + ")";
-        Statement statement = connection.createStatement();
-        // insert book into table
-        statement.executeUpdate(sql);
-        close(statement, null);
+                " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setString(1, book.getTitle());
+        preparedStatement.setString(2, new JSONArray(book.getAuthors().toArray()).toString());
+        preparedStatement.setString(3, book.getAmazon());
+        preparedStatement.setString(4, book.getSubtitle());
+        preparedStatement.setString(5, book.getDescription());
+        preparedStatement.setInt(6, book.getPageCount());
+        preparedStatement.setString(7, new JSONArray(book.getCategories().toArray()).toString());
+        preparedStatement.setString(8, book.getGoogle());
+        preparedStatement.setString(9, book.getApple());
+        preparedStatement.setString(10, book.getAudiobookDesc());
+        preparedStatement.setBoolean(11, book.isAudiobook());
+        preparedStatement.setBoolean(12, book.isEbook());
+        preparedStatement.execute();
+        preparedStatement.close();
         System.out.println(book.getTitle() + " has been successfully entered into the " +BOOKS_TABLE+ " table");
-
-    }
-
-    private static void close(Connection connection, Statement statement, ResultSet resultSet) throws SQLException {
-        if (resultSet != null) {
-            resultSet.close();
-        }
-
-        if (statement != null) {
-            statement.close();
-        }
-
-        if (connection != null) {
-            connection.close();
-        }
-    }
-
-    private void close(Statement statement, ResultSet resultSet) throws SQLException {
-        close(null, statement, resultSet);
     }
 
 }

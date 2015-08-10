@@ -110,11 +110,11 @@ public class GoogleBooks {
             book.setPageCount(0);
         }
         if(volumeInfo.has("categories")) {
-            book.setGenres(toArrayList(volumeInfo.getJSONArray("categories")));
+            book.setCategories(toArrayList(volumeInfo.getJSONArray("categories")));
         } else {
             ArrayList<String> arrayList = new ArrayList<>();
             arrayList.add("Uncategorized");
-            book.setGenres(arrayList);
+            book.setCategories(arrayList);
         }
         if(jsonBook.getJSONObject("accessInfo").has("webReaderLink")) {
             book.setGoogle(jsonBook.getJSONObject("accessInfo").getString("webReaderLink"));
