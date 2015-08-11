@@ -85,6 +85,22 @@ public class BookDatabaseHelper {
         return book;
     }
 
+    public String getApiKey() throws SQLException {
+        Statement statement = null;
+        ResultSet resultSet = null;
+
+        statement = connection.createStatement();
+        String sql = "SELECT * FROM " + BookDatabaseCreator.API_TABLE;
+        resultSet = statement.executeQuery(sql);
+
+        String apiKey = "";
+        if(resultSet.next()) {
+            apiKey = resultSet.getString("apiKey");
+        }
+
+        return apiKey;
+    }
+
     public Book getBook(String title) throws SQLException {
         Statement statement = null;
         ResultSet resultSet = null;

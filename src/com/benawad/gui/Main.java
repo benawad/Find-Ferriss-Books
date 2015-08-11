@@ -2,6 +2,7 @@ package com.benawad.gui;
 
 import com.benawad.BookSorter;
 import com.benawad.DownloadRunner;
+import com.benawad.database.BookDatabaseCreator;
 import com.benawad.database.BookDatabaseHelper;
 import com.benawad.models.Book;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -13,6 +14,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -36,6 +38,7 @@ public class Main extends JFrame {
     public static final String TITLE = "Find Ferriss Books";
 
     private BookDatabaseHelper bookDatabaseHelper;
+    private BookDatabaseCreator bookDatabaseCreator;
 
     /**
      * Launch the application.
@@ -57,6 +60,18 @@ public class Main extends JFrame {
      * Create the frame.
      */
     public Main() {
+
+        // create database if not already made
+        try {
+            bookDatabaseCreator = new BookDatabaseCreator();
+        } catch (Exception e) {
+            e.printStackTrace();
+            // if we can't cannot to database we can't run the program so just quit;
+            if(!e.getMessage().contains("database exists")) {
+                JOptionPane.showMessageDialog(null, "Cannot connect to database. Try restarting the program.", "Error", JOptionPane.ERROR_MESSAGE);
+                System.exit(0);
+            }
+        }
 
         setTitle(TITLE);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -245,6 +260,12 @@ public class Main extends JFrame {
                 googleLink.setToolTipText(GOOGLE_API_KEY_LINK);
                 googleLink.addActionListener(new LinkListener(GOOGLE_API_KEY_LINK));
                 JTextField apiKey = new JTextField();
+                try {
+                    bookDatabaseHelper = new BookDatabaseHelper();
+                    apiKey.setText(bookDatabaseHelper.getApiKey());
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
                 final JComponent[] inputs = new JComponent[]{
                         googleLink,
                         apiKey
@@ -252,7 +273,12 @@ public class Main extends JFrame {
                 int selectedOption = JOptionPane.showConfirmDialog(null, inputs, "Download Books", JOptionPane.OK_CANCEL_OPTION);
 
                 if (selectedOption == JOptionPane.YES_OPTION) {
-                    Runnable threadJob = new DownloadRunner(Main.this);
+                    try {
+                        bookDatabaseCreator.saveApiKey(apiKey.getText());
+                    } catch (SQLException e1) {
+                        e1.printStackTrace();
+                    }
+                    Runnable threadJob = new DownloadRunner(Main.this, bookDatabaseCreator);
                     Thread downloadThread = new Thread(threadJob);
                     downloadThread.start();
                 }

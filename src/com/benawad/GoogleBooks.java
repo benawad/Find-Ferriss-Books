@@ -1,5 +1,6 @@
 package com.benawad;
 
+import com.benawad.database.BookDatabaseHelper;
 import com.benawad.models.Book;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -17,10 +18,22 @@ import java.util.Random;
  * Created by benawad on 7/27/15.
  */
 public class GoogleBooks {
+
     public static final String API_URL = "https://www.googleapis.com/books/v1/volumes?q=";
-    public static final String EBOOK = "eBook";
+
+    String apiKey = "";
 
     public List<Book> createBooks(List<String[]> bookList) {
+
+        try {
+            BookDatabaseHelper helper = new BookDatabaseHelper();
+            apiKey = helper.getApiKey();
+            if(!apiKey.isEmpty()){
+                apiKey = "&key=" + apiKey;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         List<Book> books = new ArrayList<>();
 
@@ -42,6 +55,9 @@ public class GoogleBooks {
                         } catch (InterruptedException e1) {
                             e1.printStackTrace();
                         }
+                    } else if (e.getMessage().contains("400")){
+                        // invalid api key
+                        return null;
                     } else {
                         //if the error is not a 403 then not a rate limit error
                         e.printStackTrace();
@@ -128,7 +144,9 @@ public class GoogleBooks {
 
     private String searchBook(String bookTitle) throws IOException {
         String json = "";
-        URL url = new URL(API_URL + URLEncoder.encode(bookTitle, "UTF-8"));
+
+        URL url = new URL(API_URL + URLEncoder.encode(bookTitle, "UTF-8") + apiKey);
+
         BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
         String line = null;
         while ((line = br.readLine()) != null) {

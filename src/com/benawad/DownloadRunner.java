@@ -4,7 +4,7 @@ import com.benawad.database.BookDatabaseCreator;
 import com.benawad.gui.Main;
 import com.benawad.models.Book;
 
-import java.sql.SQLException;
+import javax.swing.*;
 import java.util.List;
 
 /**
@@ -13,10 +13,12 @@ import java.util.List;
 public class DownloadRunner implements Runnable {
 
     Main main;
+    BookDatabaseCreator creator;
 
-    public DownloadRunner(Main m){
+    public DownloadRunner(Main m, BookDatabaseCreator bookDatabaseCreator) {
         super();
         main = m;
+        creator = bookDatabaseCreator;
     }
 
     @Override
@@ -27,24 +29,18 @@ public class DownloadRunner implements Runnable {
             Ferriss ferriss = new Ferriss();
             GoogleBooks googleBooks = new GoogleBooks();
             List<Book> bookList = googleBooks.createBooks(ferriss.downloadAllBooks());
-            ItuneSearch ituneSearch = new ItuneSearch();
-            ituneSearch.checkIfAudiobook(bookList);
+            if(bookList == null){
+                JOptionPane.showMessageDialog(null, "Invalid API Key entered", "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                ItuneSearch ituneSearch = new ItuneSearch();
+                ituneSearch.checkIfAudiobook(bookList);
 
-            BookDatabaseCreator creator = null;
-            try {
-                creator = new BookDatabaseCreator();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            try {
                 for (Book book : bookList) {
                     creator.addBookToDatabase(book);
                 }
-            } catch (SQLException e) {
-                e.printStackTrace();
             }
-        } catch (Exception e){
+
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
             main.isDownloading = false;

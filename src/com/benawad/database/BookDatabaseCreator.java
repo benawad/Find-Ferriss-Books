@@ -14,6 +14,7 @@ public class BookDatabaseCreator {
 
     private Connection connection;
     public static final String BOOKS_TABLE = "books";
+    public static final String API_TABLE = "api_key";
 
     public BookDatabaseCreator() throws Exception {
         Properties properties = new Properties();
@@ -39,6 +40,11 @@ public class BookDatabaseCreator {
             // setCataglog() does not change statement object
             statement = connection.createStatement();
 
+            String apiTable = "CREATE TABLE " + API_TABLE + "(" +
+                    "id INT," +
+                    "apiKey TEXT,"+
+                    "PRIMARY KEY ( id ))";
+
             // create table
             String createTable = "CREATE TABLE " + BOOKS_TABLE + "(" +
                     "id INT  AUTO_INCREMENT," +
@@ -58,9 +64,12 @@ public class BookDatabaseCreator {
                     ")";
             statement.executeUpdate(createTable);
             System.out.println(BOOKS_TABLE + " table successfully created.");
+            statement.executeUpdate(apiTable);
+            System.out.println(API_TABLE + " table successfully created.");
         } catch (Exception ex){
             // database already exists, so connect to that.
             connection = DriverManager.getConnection(dburl+dname, user, password);
+            ex.printStackTrace();
         }
     }
 
@@ -83,7 +92,16 @@ public class BookDatabaseCreator {
         preparedStatement.setBoolean(12, book.isEbook());
         preparedStatement.execute();
         preparedStatement.close();
-        System.out.println(book.getTitle() + " has been successfully entered into the " +BOOKS_TABLE+ " table");
+    }
+
+    @SuppressWarnings("JpaQueryApiInspection")
+    public void saveApiKey(String apikey) throws SQLException {
+        String sql = "INSERT INTO " + API_TABLE + " (id, apiKey) VALUES(?,?) ON DUPLICATE KEY UPDATE apiKey=VALUES(apiKey)";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, 1);
+        preparedStatement.setString(2, apikey);
+        preparedStatement.execute();
+        preparedStatement.close();
     }
 
 }
