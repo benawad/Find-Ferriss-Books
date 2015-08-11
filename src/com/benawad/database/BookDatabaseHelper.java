@@ -71,7 +71,7 @@ public class BookDatabaseHelper {
     }
 
     private Book convertRowToBook(ResultSet resultSet) throws SQLException{
-        ArrayList<String> authors = GoogleBooks.toArrayList(new JSONArray(resultSet.getString("authors")));
+        ArrayList<String> authors = GoogleBooks.toStringArrayList(new JSONArray(resultSet.getString("authors")));
         boolean audiobook = false;
         boolean ebook = false;
         if(resultSet.getBoolean("audiobook")){
@@ -80,7 +80,7 @@ public class BookDatabaseHelper {
         if(resultSet.getBoolean("ebook")){
             ebook = true;
         }
-        ArrayList<String> genres = GoogleBooks.toArrayList(new JSONArray(resultSet.getString("genres")));
+        ArrayList<String> genres = GoogleBooks.toStringArrayList(new JSONArray(resultSet.getString("genres")));
         Book book = new Book(resultSet.getString("title"), authors, resultSet.getString("amazon"), resultSet.getString("subtitle"), resultSet.getString("description"), resultSet.getInt("pageCount"), genres, resultSet.getString("google"), resultSet.getString("apple"), resultSet.getString("audiobookDesc"), audiobook, ebook);
         return book;
     }

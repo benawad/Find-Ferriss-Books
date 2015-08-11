@@ -60,7 +60,7 @@ public class BookSorter {
       return  rightBooks;
    }
 
-   private static boolean contains(String word, List<String> words){
+   public static boolean contains(String word, List<String> words){
       boolean contains = false;
       for(String w : words){
          if(word.equals(w)){

@@ -11,7 +11,6 @@ import java.util.*;
 public class Ferriss {
 
     public final static String LINKS = "http://fourhourworkweek.com/podcast/";
-    public final static String SEPARATOR = "::";
 
     public List<String[]> downloadAllBooks() {
         //get all the links to every tim ferriss podcast
@@ -25,20 +24,6 @@ public class Ferriss {
         temp.addAll(books);
         books.clear();
         books.addAll(temp);
-
-//        List<String> title_author = new ArrayList<>();
-//        for(String[] array : books){
-//            title_author.add(array[0] + " by " + array[1]);
-//        }
-//        Collections.sort(title_author, new Comparator<String>() {
-//            @Override
-//            public int compare(String o1, String o2) {
-//                return o1.compareToIgnoreCase(o2);
-//            }
-//        });
-//        for(String s : title_author){
-//            System.out.println(s);
-//        }
 
         return books;
     }
@@ -58,7 +43,6 @@ public class Ferriss {
                     for (Element e : eles) {
                         Element a = e.getElementsByTag("a").get(0);
                         String url = a.attr("href");
-                        System.out.println("Found the link for " + a.text());
                         links.add(url);
                     }
                 }
@@ -94,7 +78,6 @@ public class Ferriss {
                                     String title = li.getElementsByTag("a").get(0).text().trim();
                                     if (unique(title, href, books)) {
                                         books.add(new String[]{title, href});
-                                        System.out.println("Book added to the list: " + title);
                                     }
                                 }
                             }

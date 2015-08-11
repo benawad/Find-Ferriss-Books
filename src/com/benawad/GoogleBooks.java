@@ -77,7 +77,7 @@ public class GoogleBooks {
         return books;
     }
 
-    public boolean unique(Book book, List<Book> books){
+    private boolean unique(Book book, List<Book> books){
         boolean unique = true;
         for(Book b : books){
             if(b.getTitle().equals(book.getTitle())){
@@ -87,7 +87,7 @@ public class GoogleBooks {
         return unique;
     }
 
-    public static ArrayList<String> toArrayList(JSONArray jsonArray) {
+    public static ArrayList<String> toStringArrayList(JSONArray jsonArray) {
         ArrayList<String> arraylist = new ArrayList<>();
         for (int i = 0; i < jsonArray.length(); i++) {
             arraylist.add((String) jsonArray.get(i));
@@ -109,7 +109,7 @@ public class GoogleBooks {
             book.setSubtitle("No subtitle");
         }
         if(volumeInfo.has("authors")) {
-            book.setAuthors(toArrayList(volumeInfo.getJSONArray("authors")));
+            book.setAuthors(toStringArrayList(volumeInfo.getJSONArray("authors")));
         } else {
             ArrayList<String> arrayList = new ArrayList<>();
             arrayList.add("Unknown author");
@@ -126,7 +126,7 @@ public class GoogleBooks {
             book.setPageCount(0);
         }
         if(volumeInfo.has("categories")) {
-            book.setCategories(toArrayList(volumeInfo.getJSONArray("categories")));
+            book.setCategories(toStringArrayList(volumeInfo.getJSONArray("categories")));
         } else {
             ArrayList<String> arrayList = new ArrayList<>();
             arrayList.add("Uncategorized");
