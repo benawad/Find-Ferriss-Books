@@ -1,11 +1,11 @@
 # Find-Ferriss-Books
 What is it?
 -----------
-Find-Ferriss-Books searches for all the books recommended on the [Tim Ferriss podcast](http://fourhourworkweek.com/podcast/) and breaks them into 2 text files: [audiobooks.txt](https://github.com/benawad/Find-Ferriss-Books/blob/master/audiobook.txt) and [ebooks.txt](https://github.com/benawad/Find-Ferriss-Books/blob/master/ebooks.txt)
+Find-Ferriss-Books searches for all the books recommended on the [Tim Ferriss podcast](http://fourhourworkweek.com/podcast/) and displays the results in a Swing GUI.
 
 Installation
 ------------
-Create a [Google API key](https://developers.google.com/api-client-library/php/guide/aaa_apikeys) and enable the Google Books API. When you first run the program it will ask you for your API key; paste it in and your all set.
+Download [MySQL](http://dev.mysql.com/downloads/mysql/) and [JDBC Driver](http://dev.mysql.com/downloads/connector/j/). Create a MySQL user and change the username and password in the  [`database.properties`](https://github.com/benawad/Find-Ferriss-Books/blob/master/database.properties) file to match yours. 
 
 Licensing
 ---------
