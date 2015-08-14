@@ -28,7 +28,7 @@ public class GoogleBooks {
         try {
             BookDatabaseHelper helper = new BookDatabaseHelper();
             apiKey = helper.getApiKey();
-            if(!apiKey.isEmpty()){
+            if (!apiKey.isEmpty()) {
                 apiKey = "&key=" + apiKey;
             }
         } catch (Exception e) {
@@ -39,7 +39,7 @@ public class GoogleBooks {
 
         for (String[] book : bookList) {
             String json = "";
-            for(int n = 0; n < 5; ++n){
+            for (int n = 0; n < 5; ++n) {
                 try {
                     System.out.println("Google Books API searching: " + book[0]);
                     json = searchBook(book[0]);
@@ -48,14 +48,14 @@ public class GoogleBooks {
                     //403 error = rate limit exceeded
                     //recommendation = https://developers.google.com/drive/web/handle-errors
                     //wait 1 + random_number_milliseconds
-                    if(e.getMessage().contains("403")){
+                    if (e.getMessage().contains("403")) {
                         try {
                             Random randomGenerator = new Random();
                             Thread.sleep((1 << n) * 1000 + randomGenerator.nextInt(1001));
                         } catch (InterruptedException e1) {
                             e1.printStackTrace();
                         }
-                    } else if (e.getMessage().contains("400")){
+                    } else if (e.getMessage().contains("400")) {
                         // invalid api key
                         return null;
                     } else {
@@ -64,27 +64,15 @@ public class GoogleBooks {
                     }
                 }
             }
-            if(!json.equals("")) {
+            if (!json.equals("")) {
                 Book newBook = makeBook(json);
-                if(unique(newBook, books)) {
-                    newBook.setAmazon(book[1]);
-                    books.add(newBook);
-                }
+                newBook.setAmazon(book[1]);
+                books.add(newBook);
             } else {
                 new Exception("Google Books API - rate limit exceeded");
             }
         }
         return books;
-    }
-
-    private boolean unique(Book book, List<Book> books){
-        boolean unique = true;
-        for(Book b : books){
-            if(b.getTitle().equals(book.getTitle())){
-                unique = false;
-            }
-        }
-        return unique;
     }
 
     public static ArrayList<String> toStringArrayList(JSONArray jsonArray) {
@@ -108,7 +96,7 @@ public class GoogleBooks {
         } else {
             book.setSubtitle("No subtitle");
         }
-        if(volumeInfo.has("authors")) {
+        if (volumeInfo.has("authors")) {
             book.setAuthors(toStringArrayList(volumeInfo.getJSONArray("authors")));
         } else {
             ArrayList<String> arrayList = new ArrayList<>();
@@ -125,14 +113,26 @@ public class GoogleBooks {
         } else {
             book.setPageCount(0);
         }
-        if(volumeInfo.has("categories")) {
+        if (volumeInfo.has("categories")) {
             book.setCategories(toStringArrayList(volumeInfo.getJSONArray("categories")));
         } else {
             ArrayList<String> arrayList = new ArrayList<>();
             arrayList.add("Uncategorized");
             book.setCategories(arrayList);
         }
-        if(jsonBook.getJSONObject("accessInfo").has("webReaderLink")) {
+        if (volumeInfo.has("industryIdentifiers")){
+            JSONArray industryIdentifiers = volumeInfo.getJSONArray("industryIdentifiers");
+            for (int i = 0; i < industryIdentifiers.length(); i++){
+                String type = industryIdentifiers.getJSONObject(i).getString("type");
+                if(type.equals("ISBN_10")){
+                    book.setIsbn10(industryIdentifiers.getJSONObject(i).getString("identifier"));
+                }
+                if(type.equals("ISBN_13")){
+                    book.setIsbn13(industryIdentifiers.getJSONObject(i).getString("identifier"));
+                }
+            }
+        }
+        if (jsonBook.getJSONObject("accessInfo").has("webReaderLink")) {
             book.setGoogle(jsonBook.getJSONObject("accessInfo").getString("webReaderLink"));
         } else {
             book.setGoogle("Link not available");

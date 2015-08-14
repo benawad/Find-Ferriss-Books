@@ -85,7 +85,7 @@ public class BookDatabaseHelper {
             ebook = true;
         }
         ArrayList<String> genres = GoogleBooks.toStringArrayList(new JSONArray(resultSet.getString("categories")));
-        Book book = new Book(resultSet.getString("title"), authors, resultSet.getString("amazon"), resultSet.getString("subtitle"), resultSet.getString("description"), resultSet.getInt("pageCount"), genres, resultSet.getString("google"), resultSet.getString("apple"), resultSet.getString("audiobookDesc"), audiobook, ebook);
+        Book book = new Book(resultSet.getString("title"), authors, resultSet.getString("amazon"), resultSet.getString("subtitle"), resultSet.getString("description"), resultSet.getInt("pageCount"), genres, resultSet.getString("google"), resultSet.getString("apple"), resultSet.getString("audiobookDesc"), audiobook, ebook, resultSet.getString("isbn_10"), resultSet.getString("isbn_13"));
         return book;
     }
 

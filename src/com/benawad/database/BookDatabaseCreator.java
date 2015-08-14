@@ -18,7 +18,6 @@ public class BookDatabaseCreator {
     public static final String AUTHORS_TABLE = "authors";
     public static final String CATEGORIES_TABLE = "categories";
 
-
     public BookDatabaseCreator() throws Exception {
         Properties properties = new Properties();
         properties.load(new FileInputStream("database.properties"));
@@ -72,6 +71,8 @@ public class BookDatabaseCreator {
                     "audiobookDesc TEXT ," +
                     "audiobook BOOLEAN ," +
                     "ebook BOOLEAN ," +
+                    "isbn_10 TEXT," +
+                    "isbn_13 TEXT," +
                     "PRIMARY KEY ( id )" +
                     ")";
 
@@ -89,29 +90,39 @@ public class BookDatabaseCreator {
     @SuppressWarnings("JpaQueryApiInspection")
     public void addBookToDatabase(Book book) throws SQLException {
 
-        long authorsId = insertAndGetId("authors", AUTHORS_TABLE, new JSONArray(book.getAuthors().toArray()).toString());
-        long categoriesId = insertAndGetId("categories", CATEGORIES_TABLE, new JSONArray(book.getCategories().toArray()).toString());
+        String duplicateCheck = "SELECT * FROM " + BOOKS_TABLE + " WHERE isbn_10=? and isbn_13=?";
+        PreparedStatement duplicateCheckStatement = connection.prepareStatement(duplicateCheck);
+        duplicateCheckStatement.setString(1, book.getIsbn10());
+        duplicateCheckStatement.setString(2, book.getIsbn13());
+        ResultSet resultSet = duplicateCheckStatement.executeQuery();
+        // if we find a match that means the isbn is already in the database and we don't want the book.
+        if(!resultSet.next()) {
+            long authorsId = insertAndGetId("authors", AUTHORS_TABLE, new JSONArray(book.getAuthors().toArray()).toString());
+            long categoriesId = insertAndGetId("categories", CATEGORIES_TABLE, new JSONArray(book.getCategories().toArray()).toString());
 
-        String bookInsert = "INSERT INTO " + BOOKS_TABLE +
-                "(title, authors_id, amazon, subtitle, description, pageCount, categories_id, google, apple, audiobookDesc, audiobook, ebook)" +
-                " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            String bookInsert = "INSERT INTO " + BOOKS_TABLE +
+                    "(title, authors_id, amazon, subtitle, description, pageCount, categories_id, google, apple, audiobookDesc, audiobook, ebook, isbn_10, isbn_13)" +
+                    " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        PreparedStatement preparedStatement = connection.prepareStatement(bookInsert);
-        preparedStatement.setString(1, book.getTitle());
-        preparedStatement.setLong(2, authorsId);
-        preparedStatement.setString(3, book.getAmazon());
-        preparedStatement.setString(4, book.getSubtitle());
-        preparedStatement.setString(5, book.getDescription());
-        preparedStatement.setInt(6, book.getPageCount());
-        preparedStatement.setLong(7, categoriesId);
-        preparedStatement.setString(8, book.getGoogle());
-        preparedStatement.setString(9, book.getApple());
-        preparedStatement.setString(10, book.getAudiobookDesc());
-        preparedStatement.setBoolean(11, book.isAudiobook());
-        preparedStatement.setBoolean(12, book.isEbook());
+            PreparedStatement preparedStatement = connection.prepareStatement(bookInsert);
+            preparedStatement.setString(1, book.getTitle());
+            preparedStatement.setLong(2, authorsId);
+            preparedStatement.setString(3, book.getAmazon());
+            preparedStatement.setString(4, book.getSubtitle());
+            preparedStatement.setString(5, book.getDescription());
+            preparedStatement.setInt(6, book.getPageCount());
+            preparedStatement.setLong(7, categoriesId);
+            preparedStatement.setString(8, book.getGoogle());
+            preparedStatement.setString(9, book.getApple());
+            preparedStatement.setString(10, book.getAudiobookDesc());
+            preparedStatement.setBoolean(11, book.isAudiobook());
+            preparedStatement.setBoolean(12, book.isEbook());
+            preparedStatement.setString(13, book.getIsbn10());
+            preparedStatement.setString(14, book.getIsbn13());
 
-        preparedStatement.executeUpdate();
-        preparedStatement.close();
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        }
 
     }
 
