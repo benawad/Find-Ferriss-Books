@@ -19,9 +19,7 @@ import static com.benawad.database.BookDatabaseCreator.*;
 public class BookDatabaseHelper {
     private Connection connection;
 
-    private static final String joinTables = "SELECT * "
-            + "FROM " + BOOKS_TABLE + "," + TITLE_TABLE + "," + SUBTITLE_TABLE + "," + AUTHORS_TABLE + "," + PAGE_COUNT_TABLE + "," + CATEGORIES_TABLE + "," + DESCRIPTION_TABLE + "," + AMAZON_TABLE + "," + GOOGLE_TABLE + "," + APPLE_TABLE + "," + AUDIOBOOK_DESC_TABLE + "," + AUDIOBOOK_TABLE + "," + EBOOK_TABLE +
-            " WHERE " + TITLE_TABLE + ".id=title_id and " + SUBTITLE_TABLE + ".id=subtitle_id and " + AUTHORS_TABLE + ".id=authors_id and " + PAGE_COUNT_TABLE + ".id=pageCount_id and " + CATEGORIES_TABLE + ".id=categories_id and " + DESCRIPTION_TABLE + ".id=description_id and " + AMAZON_TABLE + ".id=amazon_id and " + GOOGLE_TABLE + ".id=google_id and " + APPLE_TABLE + ".id=apple_id and " + AUDIOBOOK_DESC_TABLE + ".id=audiobookDesc_id and " + AUDIOBOOK_TABLE + ".id=audiobook_id and " + EBOOK_TABLE + ".id=ebook_id";
+    private static final String joinTables = "SELECT * FROM " + BOOKS_TABLE + ", " + AUTHORS_TABLE + ", " + CATEGORIES_TABLE + " WHERE " + AUTHORS_TABLE + ".id=authors_id and " + CATEGORIES_TABLE + ".id=categories_id";
 
     public BookDatabaseHelper() throws Exception {
         Properties properties = new Properties();
@@ -113,7 +111,7 @@ public class BookDatabaseHelper {
 
         String encodedTitle = "'"+StringEscapeUtils.escapeEcmaScript(title) + "'";
         statement = connection.createStatement();
-        String sql = joinTables + " and titles.title=" + encodedTitle;
+        String sql = joinTables + " and title=" + encodedTitle;
         resultSet = statement.executeQuery(sql);
 
         Book book = null;
